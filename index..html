@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ - Commandes d'Achats | Dior</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Georgia',serif;background:#fff;color:#000;min-height:100vh}
+header{background:#000;color:#fff;text-align:center;padding:40px 20px}
+header h1{font-size:28px;font-weight:normal;letter-spacing:6px;text-transform:uppercase}
+header p{font-size:13px;letter-spacing:3px;margin-top:10px;color:#ccc;text-transform:uppercase}
+.search-container{display:flex;flex-direction:column;align-items:center;padding:40px 20px 20px;position:relative}
+.search-wrapper{position:relative;width:100%;max-width:600px}
+.search-wrapper input{width:100%;padding:14px 20px;font-size:14px;font-family:'Georgia',serif;border:1px solid #000;outline:none;letter-spacing:1px;color:#000;background:#fff;transition:box-shadow .3s}
+.search-wrapper input::placeholder{color:#999;font-style:italic}
+.search-wrapper input:focus{box-shadow:0 0 0 1px #000}
+.suggestions-box{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #000;border-top:none;z-index:100;display:none;max-height:300px;overflow-y:auto}
+.suggestion-item{padding:12px 20px;font-size:13px;font-family:'Georgia',serif;color:#000;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:background .2s;display:flex;align-items:center;gap:10px}
+.suggestion-item:hover{background:#f9f9f9}
+.suggestion-item:last-child{border-bottom:none}
+.suggestion-icon{font-size:11px;color:#999}
+.suggestion-item .highlight{font-weight:bold}
+.no-suggestion{padding:12px 20px;font-size:13px;color:#999;font-style:italic}
+.categories{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:20px;max-width:1100px;margin:0 auto}
+.category-btn{padding:8px 20px;font-size:11px;font-family:'Georgia',serif;letter-spacing:2px;text-transform:uppercase;border:1px solid #000;background:#fff;color:#000;cursor:pointer;transition:all .3s}
+.category-btn:hover,.category-btn.active{background:#000;color:#fff}
+.main-content{max-width:900px;margin:30px auto;padding:0 20px 60px}
+.faq-section{margin-bottom:50px}
+.faq-section h2{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#000;border-bottom:1px solid #000;padding-bottom:12px;margin-bottom:0;font-weight:normal}
+.faq-item{border-bottom:1px solid #e0e0e0;overflow:hidden}
+.faq-item.hidden{display:none}
+.faq-question{width:100%;background:none;border:none;text-align:left;padding:22px 10px;font-size:14px;font-family:'Georgia',serif;color:#000;cursor:pointer;display:flex;justify-content:space-between;align-items:center;letter-spacing:.5px;transition:background .2s}
+.faq-question:hover{background:#f9f9f9}
+.faq-question span.icon{font-size:18px;font-weight:100;transition:transform .3s;min-width:20px;text-align:center}
+.faq-item.open .faq-question span.icon{transform:rotate(45deg)}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 10px}
+.faq-item.open .faq-answer{max-height:1000px;padding:0 10px 22px}
+.faq-answer p{font-size:13px;line-height:1.9;color:#333;letter-spacing:.3px}
+.faq-answer ul,.faq-answer ol{margin:10px 0 10px 20px;font-size:13px;line-height:1.9;color:#333}
+.faq-answer li{margin-bottom:4px}
+.faq-answer .code-sap{font-family:'Courier New',monospace;background:#f5f5f5;padding:2px 6px;border:1px solid #e0e0e0;font-size:12px;color:#000}
+.faq-answer .warning{margin-top:12px;font-size:12px;color:#666;font-style:italic;border-left:2px solid #000;padding-left:10px}
+.no-results{text-align:center;padding:60px 20px;display:none}
+.no-results p{font-size:13px;color:#999;letter-spacing:2px;text-transform:uppercase}
+footer{background:#000;color:#fff;text-align:center;padding:30px 20px}
+footer p{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ccc}
+footer a{color:#fff;text-decoration:none;border-bottom:1px solid #fff;padding-bottom:1px;transition:color .3s}
+footer a:hover{color:#ccc;border-bottom-color:#ccc}
+@media(max-width:600px){header h1{font-size:20px;letter-spacing:4px}.faq-question{font-size:13px}}
+.liens-utiles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;margin-top:20px}
+.lien-card{border:1px solid #000;padding:20px;display:flex;flex-direction:column;gap:10px;transition:background .2s}
+.lien-card:hover{background:#f9f9f9}
+.lien-card-icon{font-size:24px}
+.lien-card-title{font-size:13px;font-family:'Georgia',serif;color:#000;letter-spacing:.3px;line-height:1.6;flex-grow:1}
+.lien-card-link{font-size:11px;font-family:'Georgia',serif;color:#000;text-decoration:none;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #000;padding-bottom:2px;align-self:flex-start;transition:color .2s}
+.lien-card-link:hover{color:#666;border-bottom-color:#666}
+#admin-fab{position:fixed;bottom:24px;right:24px;z-index:9999;width:44px;height:44px;background:#000;color:#fff;border:none;cursor:pointer;font-size:20px;line-height:44px;text-align:center;opacity:.25;transition:opacity .3s}
+#admin-fab:hover{opacity:1}
+#admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;align-items:center;justify-content:center}
+#admin-overlay.open{display:flex}
+#admin-panel{background:#fff;border:1px solid #000;width:92%;max-width:700px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;font-family:'Georgia',serif;position:relative}
+.admin-header{padding:24px 28px 0;border-bottom:1px solid #000;flex-shrink:0}
+.admin-header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.admin-header-top h3{font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:normal}
+.admin-close{background:none;border:none;font-size:26px;cursor:pointer;color:#000;line-height:1;font-weight:100;padding:0;margin-top:-4px}
+.admin-tabs{display:flex}
+.admin-tab{padding:10px 20px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Georgia',serif;border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;color:#999;transition:all .2s}
+.admin-tab.active{color:#000;border-bottom-color:#000}
+.admin-body{padding:24px 28px;overflow-y:auto;flex:1}
+.field-label{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:6px;margin-top:18px}
+.field-label:first-child{margin-top:0}
+.admin-panel input[type=text],.admin-panel input[type=password],.admin-panel input[type=url],.admin-panel select,.admin-panel textarea{width:100%;padding:10px 14px;font-size:13px;font-family:'Georgia',serif;border:1px solid #000;outline:none;background:#fff;color:#000;transition:box-shadow .2s}
+.admin-panel input:focus,.admin-panel select:focus,.admin-panel textarea:focus{box-shadow:0 0 0 1px #000}
+.admin-panel textarea{min-height:110px;resize:vertical}
+.btn-row{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.btn{padding:10px 22px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Georgia',serif;border:1px solid #000;cursor:pointer;transition:all .2s}
+.btn-primary{background:#000;color:#fff}
+.btn-primary:hover{background:#333}
+.btn-ghost{background:#fff;color:#000}
+.btn-ghost:hover{background:#f5f5f5}
+.admin-msg{margin-top:14px;font-size:12px;letter-spacing:1px;padding:10px 14px;display:none}
+.admin-msg.ok{background:#f0fff0;border-left:2px solid #000;color:#000}
+.admin-msg.err{background:#fff0f0;border-left:2px solid #c00;color:#c00}
+.admin-msg.wait{background:#f5f5f5;border-left:2px solid #999;color:#666}
+.sync-bar{display:flex;align-items:center;gap:8px;margin-top:6px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0}
+.sync-dot.ok{background:#22c55e}
+.sync-dot.wait{background:#f59e0b}
+.sync-dot.err{background:#ef4444}
+.sync-txt{font-size:11px;color:#999;letter-spacing:1px}
+.item-list{margin-top:22px}
+.item-list-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#666;padding-top:18px;border-top:1px solid #e0e0e0;margin-bottom:12px}
+.item-row{display:flex;align-items:flex-start;gap:10px;padding:12px 8px;border-bottom:1px solid #eee;cursor:grab;user-select:none;transition:background .15s}
+.item-row:active{cursor:grabbing}
+.item-row.dragging{opacity:.4;background:#f5f5f5}
+.item-row.drag-over{border-top:2px solid #000}
+.drag-handle{color:#ccc;font-size:18px;flex-shrink:0;margin-top:2px}
+.item-info{flex:1;min-width:0}
+.item-info strong{font-size:13px;color:#000;display:block;line-height:1.4}
+.item-info span{font-size:11px;color:#999;display:block;margin-top:2px}
+.item-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;font-size:16px;color:#ccc;transition:color .2s;line-height:1}
+.icon-btn:hover{color:#000}
+.icon-btn.del:hover{color:#c00}
+.edit-form{background:#fafafa;border:1px solid #e0e0e0;padding:16px;margin-top:8px;display:none}
+.edit-form.open{display:block}
+.edit-form .field-label{margin-top:12px}
+.edit-form .field-label:first-child{margin-top:0}
+.edit-btn-row{display:flex;gap:8px;margin-top:14px}
+#admin-lock{padding:32px 28px}
+#admin-lock h3{font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:normal;border-bottom:1px solid #000;padding-bottom:12px;margin-bottom:24px}
+#sync-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:8000;padding:10px 20px;font-size:12px;font-family:'Georgia',serif;letter-spacing:1px;text-align:center}
+#sync-banner.wait{background:#fffbeb;color:#92400e;border-bottom:1px solid #fde68a;display:block}
+#sync-banner.err{background:#fff0f0;color:#c00;border-bottom:1px solid #fca5a5;display:block}
+</style>
+</head>
+<body>
+
+<div id="sync-banner"></div>
+
+<header>
+  <h1>Dior</h1>
+  <p>Foire Aux Questions — Commandes d'Achats</p>
+</header>
+
+<div class="search-container">
+  <div class="search-wrapper">
+    <input type="text" id="searchInput" placeholder="Rechercher une question..." onkeyup="handleSearch()" onfocus="handleSearch()" autocomplete="off">
+    <div class="suggestions-box" id="suggestionsBox"></div>
+  </div>
+</div>
+
+<div class="categories" id="categoriesBar">
+  <button class="category-btn active" onclick="filterCategory('all',this)">Toutes les questions</button>
+  <button class="category-btn" onclick="filterCategory('essentiels',this)">Les Essentiels</button>
+  <button class="category-btn" onclick="filterCategory('montants',this)">Montants HT / TTC</button>
+  <button class="category-btn" onclick="filterCategory('refacturation',this)">Refacturations Marchés</button>
+  <button class="category-btn" onclick="filterCategory('suppression',this)">Suppression de Commandes</button>
+  <button class="category-btn" onclick="filterCategory('pj',this)">Pièces Jointes</button>
+  <button class="category-btn" onclick="filterCategory('astuces',this)">Astuces Pratiques</button>
+  <button class="category-btn" onclick="filterCategory('aide',this)">Aide &amp; Contacts</button>
+  <button class="category-btn" onclick="filterCategory('engagement',this)">Engagement des Dépenses</button>
+  <button class="category-btn" onclick="filterCategory('personnel',this)">Personnel Extérieur</button>
+  <button class="category-btn" onclick="filterCategory('cdc',this)">Commandes CDC</button>
+  <button class="category-btn" onclick="filterCategory('liens',this)">Liens Utiles</button>
+</div>
+
+<div class="main-content">
+  <div class="faq-section" id="section-essentiels">
+    <h2>Les Essentiels des Commandes d'Achats</h2>
+    <div class="faq-item" data-category="essentiels" data-keywords="délais paiement règles légales sanctions amende DGCCRF 60 jours 30 jours 45 jours transport biens services"><button class="faq-question" onclick="toggleFAQ(this)">Quelles sont les conditions de paiement légales à respecter ?<span class="icon">+</span></button><div class="faq-answer"><p>Les délais de paiement sont encadrés par la loi :</p><ul><li><strong>60 jours</strong> à compter de la date de facture pour les fournisseurs de biens et services</li><li><strong>30 jours</strong> pour les fournisseurs de transport</li><li><strong>45 jours fin de mois</strong> uniquement si inscrit dans le contrat</li></ul><p>En cas de non-respect : amende jusqu'à <strong>2 millions d'euros</strong> et publication sur le site de la <strong>DGCCRF</strong>.</p></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="portefeuille commandes achat ZCFR_CDE_ACHAT SAP transaction suivi validation statut historique fournisseur"><button class="faq-question" onclick="toggleFAQ(this)">Qu'est-ce que la transaction SAP ZCFR_CDE_ACHAT et à quoi sert-elle ?<span class="icon">+</span></button><div class="faq-answer"><p>La transaction <span class="code-sap">ZCFR_CDE_ACHAT</span> est le <strong>Portefeuille de Commandes d'Achat</strong>. Elle permet de consulter le portefeuille, suivre la validation, identifier les commandes à réceptionner en fin de mois et retrouver l'historique par fournisseur.</p></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="listes personnelles fournisseurs codes articles centres coûts création commande matchcode"><button class="faq-question" onclick="toggleFAQ(this)">Comment créer et utiliser des listes personnelles dans SAP ?<span class="icon">+</span></button><div class="faq-answer"><p>Lors de la création d'une commande, vous pouvez créer des <strong>listes personnelles de fournisseurs, codes articles et centres de coûts</strong>, rappelées via le <strong>matchcode</strong>.</p></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="commande avant prestation pourquoi traçabilité contrôle budgétaire engagement devis timing"><button class="faq-question" onclick="toggleFAQ(this)">Pourquoi faut-il passer une commande avant la prestation ?<span class="icon">+</span></button><div class="faq-answer"><p>Pour des raisons de contrôle, de traçabilité et d'engagement budgétaire, les commandes doivent être passées dès réception du devis ou de l'engagement.</p></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="commande sans devis préalable exception juridique réparation urgente fournisseur honoraires institutions"><button class="faq-question" onclick="toggleFAQ(this)">Dans quels cas peut-on passer une commande sans devis préalable ?<span class="icon">+</span></button><div class="faq-answer"><ul><li>Prestations juridiques</li><li>Réparations urgentes</li><li>Fournisseurs n'émettant pas de devis (honoraires, institutions…)</li></ul></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="commande 5000 euros devis pièce jointe obligatoire contrôle interne audit fiscal justificatif"><button class="faq-question" onclick="toggleFAQ(this)">Les commandes supérieures à 5 000 € nécessitent-elles un document particulier ?<span class="icon">+</span></button><div class="faq-answer"><p>Oui. Les commandes &gt; 5 000 € doivent obligatoirement contenir le devis en pièce jointe dans SAP.</p></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="date livraison commande saisir fidèle réalité devis période comptable rattachement charges"><button class="faq-question" onclick="toggleFAQ(this)">Comment saisir la date de livraison d'une commande ?<span class="icon">+</span></button><div class="faq-answer"><p>La date de livraison doit correspondre exactement à celle du devis.</p></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="code article SAP définition importance comptable comptes commande glossaire liste typologies"><button class="faq-question" onclick="toggleFAQ(this)">Qu'est-ce qu'un code article et pourquoi est-il important ?<span class="icon">+</span></button><div class="faq-answer"><p>Les codes articles déterminent les comptes comptables attribués aux commandes. La liste complète est disponible dans le glossaire sur l'Intranet.</p></div></div>
+    <div class="faq-item" data-category="essentiels" data-keywords="numéro PO purchase order facture fournisseur rattacher référence commande"><button class="faq-question" onclick="toggleFAQ(this)">Pourquoi faut-il demander aux fournisseurs de mentionner le numéro de PO sur la facture ?<span class="icon">+</span></button><div class="faq-answer"><p>Le numéro de PO permet de rattacher les factures aux commandes. Sans lui, le traitement sera retardé.</p></div></div>
+  </div>
+  <div class="faq-section" id="section-montants">
+    <h2>Montants HT / TTC</h2>
+    <div class="faq-item" data-category="montants" data-keywords="commande HT TTC montant hors taxes toutes taxes TVA récupérable règle générale"><button class="faq-question" onclick="toggleFAQ(this)">Les commandes doivent-elles être passées en HT ou en TTC ?<span class="icon">+</span></button><div class="faq-answer"><p>En règle générale en <strong>HT</strong>, car la TVA est récupérable. Des exceptions existent ci-dessous.</p></div></div>
+    <div class="faq-item" data-category="montants" data-keywords="dépenses TTC TVA non récupérable hôtel taxi bus avion train transport logement code SAP"><button class="faq-question" onclick="toggleFAQ(this)">Quelles dépenses doivent être passées en TTC ?<span class="icon">+</span></button><div class="faq-answer"><ul><li>Hôtel → <span class="code-sap">9VD0200101</span> TTC</li><li>Taxi → <span class="code-sap">9VD0800101</span> | Bus → <span class="code-sap">9VD0800301</span></li><li>Avion → <span class="code-sap">9VD0100101</span> | Train → <span class="code-sap">9VD0700101</span></li></ul></div></div>
+    <div class="faq-item" data-category="montants" data-keywords="cadeaux commande HT TTC prix unitaire 73 euros salariés hors salariés code SAP seuil"><button class="faq-question" onclick="toggleFAQ(this)">Comment passer une commande pour des cadeaux ?<span class="icon">+</span></button><div class="faq-answer"><ul><li>&gt;73€ TTC → TTC (salariés <span class="code-sap">9ES1000104</span> / hors salariés <span class="code-sap">9ES1000102</span>)</li><li>&lt;73€ TTC → HT (salariés <span class="code-sap">9ES1000105</span> / hors salariés <span class="code-sap">9ES1000103</span>)</li></ul></div></div>
+  </div>
+  <div class="faq-section" id="section-refacturation">
+    <h2>Refacturations Marchés</h2>
+    <div class="faq-item" data-category="refacturation" data-keywords="refacturation marchés définition intermédiaire siège commandes immatérielles centralisation taxes"><button class="faq-question" onclick="toggleFAQ(this)">Qu'est-ce que le processus de refacturation marchés ?<span class="icon">+</span></button><div class="faq-answer"><p>Le siège joue le rôle d'intermédiaire pour certaines commandes des marchés (<strong>immatérielles</strong> uniquement).</p></div></div>
+    <div class="faq-item" data-category="refacturation" data-keywords="processus refacturation étapes marché siège SAP factures trimestriel demande validation"><button class="faq-question" onclick="toggleFAQ(this)">Comment fonctionne le processus de refacturation marchés étape par étape ?<span class="icon">+</span></button><div class="faq-answer"><ol><li>Demandes des marchés au siège</li><li>Commandes passées par les services opérationnels du siège</li><li>Réception des factures</li><li>Refacturation <strong>trimestrielle</strong></li></ol></div></div>
+    <div class="faq-item" data-category="refacturation" data-keywords="texte commande SAP refacturation marché anglais projet marché coûts demandeur validateur retour ligne"><button class="faq-question" onclick="toggleFAQ(this)">Quelles informations doivent figurer dans le texte SAP pour une refacturation marché ?<span class="icon">+</span></button><div class="faq-answer"><p>En anglais, sans retour à la ligne : nom du projet, marché(s) concerné(s), demandeur, validateur local.</p><p class="warning">⚠️ Sans texte en anglais, le CDG ne peut pas valider.</p></div></div>
+    <div class="faq-item" data-category="refacturation" data-keywords="documents obligatoires commande marché accord écrit email devis fournisseur validation pièce jointe"><button class="faq-question" onclick="toggleFAQ(this)">Quels documents sont obligatoires pour une commande spécifique à un marché ?<span class="icon">+</span></button><div class="faq-answer"><p>E-mail d'accord du marché + devis fournisseur (quel que soit le montant).</p><p class="warning">⚠️ Sans ces documents, le CDG ne peut pas valider.</p></div></div>
+  </div>
+  <div class="faq-section" id="section-suppression">
+    <h2>Suppression de Commandes</h2>
+    <div class="faq-item" data-category="suppression" data-keywords="supprimer commande non réceptionnée SAP poste corbeille enregistrer définitif"><button class="faq-question" onclick="toggleFAQ(this)">Comment supprimer une commande non réceptionnée dans SAP ?<span class="icon">+</span></button><div class="faq-answer"><ol><li>Sélectionner le poste</li><li>Cliquer sur la corbeille</li><li>Enregistrer</li></ol><p class="warning">⚠️ Définitif.</p></div></div>
+    <div class="faq-item" data-category="suppression" data-keywords="supprimer commande réceptionnée SAP annuler réception comptable livraison finale facture cadenas enregistrer"><button class="faq-question" onclick="toggleFAQ(this)">Comment supprimer une commande déjà réceptionnée dans SAP ?<span class="icon">+</span></button><div class="faq-answer"><ol><li>Annuler la réception (comptable)</li><li>Cocher "Livraison Finale"</li><li>Cocher "Facture Fin."</li><li>Cliquer sur le cadenas fermé</li><li>Enregistrer</li></ol><p class="warning">⚠️ Définitif.</p></div></div>
+  </div>
+  <div class="faq-section" id="section-pj">
+    <h2>Pièces Jointes dans les Commandes</h2>
+    <div class="faq-item" data-category="pj" data-keywords="insérer document pièce jointe commande SAP ME22N devis mail archiver joindre fichier"><button class="faq-question" onclick="toggleFAQ(this)">Comment insérer un document en pièce jointe dans une commande SAP ?<span class="icon">+</span></button><div class="faq-answer"><p><span class="code-sap">ME22N</span> → Services pour objet → Archiver Business Document → Chercher fichier → Ouvrir.</p></div></div>
+    <div class="faq-item" data-category="pj" data-keywords="consulter voir documents joints commande SAP liste pièces jointes ouvrir fichier"><button class="faq-question" onclick="toggleFAQ(this)">Comment consulter les documents joints à une commande SAP ?<span class="icon">+</span></button><div class="faq-answer"><p>Services pour objet → Liste des pièces jointes → double-cliquer sur le fichier.</p></div></div>
+    <div class="faq-item" data-category="pj" data-keywords="supprimer document joint commande SAP corbeille confirmer erreur manipulation"><button class="faq-question" onclick="toggleFAQ(this)">Comment supprimer un document joint à une commande SAP ?<span class="icon">+</span></button><div class="faq-answer"><p>Sélectionner la ligne → corbeille → confirmer "Oui".</p></div></div>
+  </div>
+  <div class="faq-section" id="section-engagement">
+    <h2>Engagement des Dépenses</h2>
+    <div class="faq-item" data-category="engagement" data-keywords="processus engagement dépenses étapes budget DA commande réception paiement MyRequest responsabilité"><button class="faq-question" onclick="toggleFAQ(this)">Quelles sont les étapes du processus d'engagement des dépenses ?<span class="icon">+</span></button><div class="faq-answer"><ol><li>Budget</li><li>Demande d'Achat dans MyRequest</li><li>Commande (numéro PO)</li><li>Réception de la prestation</li><li>Paiement</li></ol><p class="warning">⚠️ Ne pas respecter ce processus, c'est engager seul sa responsabilité.</p></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="demande achat DA quand créer amont prestation devis facture MyRequest fichier engagement"><button class="faq-question" onclick="toggleFAQ(this)">Quand doit-on créer une Demande d'Achat (DA) ?<span class="icon">+</span></button><div class="faq-answer"><p>En amont de la prestation, à réception du devis. Jamais à réception de la facture. Pièce jointe obligatoire.</p></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="circuit validation DA montant seuil valideur opérationnel CDG Aurélie Odile Sandra 15000 50000 100000"><button class="faq-question" onclick="toggleFAQ(this)">Quel est le circuit de validation d'une Demande d'Achat selon le montant ?<span class="icon">+</span></button><div class="faq-answer"><ul><li>&lt;15 000€ → Vol.Op.I → Aurélie → Assistante CDG</li><li>15–50k€ → +Vol.Op.II</li><li>50–100k€ → +Odile</li><li>&gt;100k€ → +Sandra</li></ul><p class="warning">📌 ~1 semaine. Faire les DAs au fil de l'eau.</p></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="réception prestation X colonne fichier engagement CDG paiement fournisseur obligatoire"><button class="faq-question" onclick="toggleFAQ(this)">Comment signaler qu'une prestation a bien été réalisée ?<span class="icon">+</span></button><div class="faq-answer"><p>Renseigner un <strong>"X"</strong> dans la colonne "Prestation réalisée ?" du fichier d'engagement. Sans ce X, le fournisseur n'est pas payé.</p></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="clôture mensuelle fichier engagement vérifier exhaustivité exactitude doublons prestation reporté annulé"><button class="faq-question" onclick="toggleFAQ(this)">Que doit-on faire au moment de la clôture mensuelle ?<span class="icon">+</span></button><div class="faq-answer"><ul><li>Vérifier exhaustivité et exactitude du fichier</li><li>Prestation reportée → indiquer sur la phase suivante</li><li>Prestation annulée → mettre à zéro</li><li>Renseigner la colonne "Prestation réalisée ?"</li></ul></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="facture montant différent DA supérieur inférieur complémentaire delta régularisation"><button class="faq-question" onclick="toggleFAQ(this)">Que faire si le montant de la facture diffère de celui de la DA ?<span class="icon">+</span></button><div class="faq-answer"><ul><li>Facture &gt; DA → DA complémentaire requise</li><li>Facture &lt; DA → aucune action</li></ul></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="fournisseur occasionnel règles conditions montant 4000 euros 4 fois annuel capex création SAP"><button class="faq-question" onclick="toggleFAQ(this)">Quelles sont les règles pour utiliser un fournisseur occasionnel ?<span class="icon">+</span></button><div class="faq-answer"><p>Conditions : &lt;4 000€ TTC annuel, max 4 fois/an, hors Capex. Fournir : formulaire paiement occasionnel + RIB + facture.</p></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="création fournisseur nouveau SAP délai semaine code conduite formulaire dossier complet"><button class="faq-question" onclick="toggleFAQ(this)">Quelle est la procédure pour la création d'un nouveau fournisseur ?<span class="icon">+</span></button><div class="faq-answer"><p>Faire compléter : Code de conduite LVMH + Formulaire fournisseurs VF. Délai : ~1 semaine.</p></div></div>
+    <div class="faq-item" data-category="engagement" data-keywords="stagiaires CDD alternants habilités DA demande achat sorties diverses restriction"><button class="faq-question" onclick="toggleFAQ(this)">Les stagiaires, CDD et alternants peuvent-ils passer des Demandes d'Achat ?<span class="icon">+</span></button><div class="faq-answer"><p>Non, sauf pour les Sorties Diverses.</p></div></div>
+  </div>
+  <div class="faq-section" id="section-astuces">
+    <h2>Astuces Pratiques</h2>
+    <div class="faq-item" data-category="astuces" data-keywords="convertir email mail PDF joindre commande imprimer Microsoft Print to PDF outlook"><button class="faq-question" onclick="toggleFAQ(this)">Comment convertir un e-mail en PDF pour le joindre à une commande SAP ?<span class="icon">+</span></button><div class="faq-answer"><p>Double-clic sur le mail → Fichier → Imprimer → "Microsoft Print to PDF" → nommer et enregistrer.</p></div></div>
+    <div class="faq-item" data-category="astuces" data-keywords="convertir image JPG PNG PDF Photos imprimer Microsoft Print to PDF explorateur clic droit"><button class="faq-question" onclick="toggleFAQ(this)">Comment convertir une image (JPG, PNG…) en PDF ?<span class="icon">+</span></button><div class="faq-answer"><p>Clic droit → "Ouvrir avec Photos" → icône imprimante → "Microsoft Print to PDF" → enregistrer.</p></div></div>
+  </div>
+  <div class="faq-section" id="section-personnel">
+    <h2>Commandes d'Achat — Personnel Extérieur</h2>
+    <div class="faq-item" data-category="personnel" data-keywords="commande personnel extérieur création devis signé responsable durée engagement jours taux journalier freelance agence"><button class="faq-question" onclick="toggleFAQ(this)">Comment créer une commande d'achat pour du personnel extérieur ?<span class="icon">+</span></button><div class="faq-answer"><p>Devis signé obligatoire (durée, nb jours, TJM). Article <span class="code-sap">PI</span>, frais de gestion article <span class="code-sap">9PI0100102</span>. Montant HT. Date livraison = fin de prestation.</p></div></div>
+    <div class="faq-item" data-category="personnel" data-keywords="réception mensuelle prestation personnel extérieur jours travaillés fin mois réception finale workflow"><button class="faq-question" onclick="toggleFAQ(this)">Comment se déroule la réception mensuelle d'une prestation de personnel extérieur ?<span class="icon">+</span></button><div class="faq-answer"><p>Réception avant fin de mois = jours travaillés. Dernière réception = <strong>"réception finale"</strong>.</p></div></div>
+    <div class="faq-item" data-category="personnel" data-keywords="modification commande personnel extérieur tarif réévalué contrat reconduit nouveau poste clôturer anciens"><button class="faq-question" onclick="toggleFAQ(this)">Comment modifier une commande de personnel extérieur en cours d'année ?<span class="icon">+</span></button><div class="faq-answer"><p>Clôturer les anciens postes → ajouter de nouveaux postes avec le nouveau tarif et la nouvelle date de fin.</p></div></div>
+    <div class="faq-item" data-category="personnel" data-keywords="écart quantité prix facture personnel extérieur workflow avoir fournisseur réception complémentaire"><button class="faq-question" onclick="toggleFAQ(this)">Que faire en cas d'écart entre la facture et la commande pour du personnel extérieur ?<span class="icon">+</span></button><div class="faq-answer"><p><strong>Écart quantité :</strong> réception complémentaire ou avoir.<br><strong>Écart prix :</strong> annulation réception + correction, ou avoir.<br><strong>Non-réception :</strong> faire la réception puis valider le Workflow.</p></div></div>
+  </div>
+  <div class="faq-section" id="section-cdc">
+    <h2>Commandes d'Achat — Christian Dior Couture</h2>
+    <div class="faq-item" data-category="cdc" data-keywords="écart comptes CDC Christian Dior Couture LVMH consolidés comptes interco juin septembre"><button class="faq-question" onclick="toggleFAQ(this)">Pourquoi faut-il respecter des process particuliers pour les commandes Christian Dior Couture ?<span class="icon">+</span></button><div class="faq-answer"><p>Des écarts entre nos comptes et ceux de CDC faussent les comptes consolidés LVMH.</p></div></div>
+    <div class="faq-item" data-category="cdc" data-keywords="process commandes CDC règles essentielles SAP engagement devis numéro commande facture CEGEDIM webcycle"><button class="faq-question" onclick="toggleFAQ(this)">Quels sont les process essentiels à respecter pour les commandes Christian Dior Couture ?<span class="icon">+</span></button><div class="faq-answer"><ul><li>Commande SAP dès qu'un engagement est pris, devis joint</li><li>Numéro de PO communiqué aux interlocuteurs CDC</li><li>Factures déposées sur le portail <strong>CEGEDIM</strong></li><li>Webcycles traités au fil de l'eau</li></ul></div></div>
+  </div>
+  <div class="faq-section" id="section-aide">
+    <h2>Aide &amp; Contacts</h2>
+    <div class="faq-item" data-category="aide" data-keywords="relancer valideur délai semaine CDG Nicolas calendrier clôture deadline"><button class="faq-question" onclick="toggleFAQ(this)">Comment et quand relancer les valideurs pour une Demande d'Achat ?<span class="icon">+</span></button><div class="faq-answer"><p>~1 semaine. Faire les DAs au fil de l'eau. Passer par le <strong>CDG (Nicolas)</strong> pour relancer.</p></div></div>
+    <div class="faq-item" data-category="aide" data-keywords="informations ressources commandes achats intranet Diornet SharePoint glossaire supports SAP guides"><button class="faq-question" onclick="toggleFAQ(this)">Où trouver des informations et ressources sur les commandes d'achats ?<span class="icon">+</span></button><div class="faq-answer"><p>Intranet Dior (Diornet / SharePoint) → rubrique "Achats".</p></div></div>
+    <div class="faq-item" data-category="aide" data-keywords="nouvelle recrue formation commandes achats Felicina Soulas sessions formation"><button class="faq-question" onclick="toggleFAQ(this)">Une nouvelle recrue doit créer des commandes d'achats, qui contacter pour la formation ?<span class="icon">+</span></button><div class="faq-answer"><p><strong>Felicina Soulas</strong> organise régulièrement des sessions de formation.</p></div></div>
+    <div class="faq-item" data-category="aide" data-keywords="question intranet réponse introuvable contact Felicina Soulas orienter problématique"><button class="faq-question" onclick="toggleFAQ(this)">Vous ne trouvez pas la réponse sur l'Intranet, qui contacter ?<span class="icon">+</span></button><div class="faq-answer"><p><strong>Felicina Soulas</strong> pourra vous répondre ou vous orienter.</p></div></div>
+    <div class="faq-item" data-category="aide" data-keywords="question facture contact comptable référent fournisseur FK03 correspondance"><button class="faq-question" onclick="toggleFAQ(this)">Vous avez une question sur une facture, qui contacter ?<span class="icon">+</span></button><div class="faq-answer"><p>Comptable référent du fournisseur via <span class="code-sap">FK03</span> → Correspondance.</p></div></div>
+    <div class="faq-item" data-category="aide" data-keywords="commande attente validation valideur Teams débloquer niveau"><button class="faq-question" onclick="toggleFAQ(this)">Une commande est en attente de validation, que faire ?<span class="icon">+</span></button><div class="faq-answer"><p>Identifier le niveau de validation en attente et envoyer un message <strong>Teams</strong> au valideur concerné.</p></div></div>
+    <div class="faq-item" data-category="aide" data-keywords="difficulté création fournisseur Central Vendors Thierry Guingand démarche processus"><button class="faq-question" onclick="toggleFAQ(this)">Difficulté dans le processus de création d'un fournisseur, qui contacter ?<span class="icon">+</span></button><div class="faq-answer"><p>L'équipe <strong>Central Vendors de Thierry Guingand</strong>.</p></div></div>
+  </div>
+
+  <div class="faq-section" id="section-liens">
+    <h2>Liens Utiles</h2>
+    <div class="liens-utiles-grid" id="static-liens-grid">
+      <div class="lien-card"><span class="lien-card-icon">📊</span><p class="lien-card-title">BASE ARTICLE GLOSSAIRE HP au 2022 07</p><a href="https://wwpcis.sharepoint.com/:x:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/BASE%20ARTICLE%20GLOSSAIRE%20HP%20au%202022%2007.xlsx?d=w8bb7d88ce8684ee098436269622c63b4&csf=1&web=1&e=JfOEgn" target="_blank" class="lien-card-link">Voir le document</a></div>
+      <div class="lien-card"><span class="lien-card-icon">📄</span><p class="lien-card-title">MODE OPERATOIRE CREA DEPLOI 2025</p><a href="https://wwpcis.sharepoint.com/:b:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/MODE%20OPERATOIRE%20CREA%20DEPLOI%202025.pdf?csf=1&web=1&e=9QNyPy" target="_blank" class="lien-card-link">Voir le document</a></div>
+      <div class="lien-card"><span class="lien-card-icon">📄</span><p class="lien-card-title">PCD FR - Procédure Créations fournisseurs - Mai 2019</p><a href="https://wwpcis.sharepoint.com/:b:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/PCD%20FR%20-%20Procedure%20Cr%C3%A9ations%20fournisseurs%20-Mai%202019.pdf?csf=1&web=1&e=6Q98xo" target="_blank" class="lien-card-link">Voir le document</a></div>
+      <div class="lien-card"><span class="lien-card-icon">📑</span><p class="lien-card-title">Pièces jointes dans commandes d'achats</p><a href="https://wwpcis.sharepoint.com/:p:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/Pieces%20jointes%20dans%20commandes%20d%27achats.pptx?d=w0b6e491df66541a3b1553fd43b2dfb20&csf=1&web=1&e=CIyQCl" target="_blank" class="lien-card-link">Voir le document</a></div>
+      <div class="lien-card"><span class="lien-card-icon">📑</span><p class="lien-card-title">Présentation Engagement des dépenses France</p><a href="https://wwpcis.sharepoint.com/:p:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/Pr%C3%A9sentation%20Engagement%20depenses%20France.pptx?d=w0ca15a9ad65c458c944221af7a5fe607&csf=1&web=1&e=gaR5Kj" target="_blank" class="lien-card-link">Voir le document</a></div>
+      <div class="lien-card"><span class="lien-card-icon">📄</span><p class="lien-card-title">Process commande d'achat 210923-VF</p><a href="https://wwpcis.sharepoint.com/:b:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/Process%20commande%20d%27achat%20210923-VF.pdf?csf=1&web=1&e=kLRi5o" target="_blank" class="lien-card-link">Voir le document</a></div>
+      <div class="lien-card"><span class="lien-card-icon">📑</span><p class="lien-card-title">Process commandes d'achat Christian Dior Couture</p><a href="https://wwpcis.sharepoint.com/:p:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/Process%20commandes%20d%27achat%20Christian%20Dior%20Couture.pptx?d=wa894938421b34098b04b928a867863ea&csf=1&web=1&e=3bbVcw" target="_blank" class="lien-card-link">Voir le document</a></div>
+      <div class="lien-card"><span class="lien-card-icon">📑</span><p class="lien-card-title">Règles de gestion — Personnel Extérieur v02 2026</p><a href="https://wwpcis.sharepoint.com/:p:/r/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux/Shared%20Documents/documents%20relatifs%20au%20site/R%C3%A8gles%20de%20gestion%20et%20modes%20op%C3%A9ratoires%20commandes%20d%27achats%20Personnel%20Ext%C3%A9rieur%20v022026.pptx?d=w6bcff4333ae64ac688e9f9ae34e9052e&csf=1&web=1&e=gZ9bc7" target="_blank" class="lien-card-link">Voir le document</a></div>
+    </div>
+    <div class="liens-utiles-grid" id="dynamic-liens-grid" style="margin-top:0"></div>
+  </div>
+
+  <div id="dynamic-faq-sections"></div>
+  <div class="no-results" id="noResults"><p>Aucune question ne correspond à votre recherche.</p></div>
+</div>
+
+<footer>
+  <p>Une question non répertoriée ? Contactez le service <a href="mailto:">Contrôle de Gestion</a></p>
+</footer>
+
+<button id="admin-fab" title="Administration" onclick="openAdmin()">⚙</button>
+
+<div id="admin-overlay">
+  <div id="admin-panel" class="admin-panel">
+    <div id="admin-lock">
+      <h3>Administration FAQ</h3>
+      <label class="field-label" for="admin-pwd">Mot de passe</label>
+      <input type="password" id="admin-pwd" placeholder="Entrez le mot de passe..." onkeydown="if(event.key==='Enter')checkPwd()">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="checkPwd()">Accéder</button>
+        <button class="btn btn-ghost" onclick="closeAdmin()">Annuler</button>
+      </div>
+      <div id="lock-msg" class="admin-msg"></div>
+    </div>
+    <div id="admin-main" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+      <div class="admin-header">
+        <div class="admin-header-top">
+          <div>
+            <h3>Administration FAQ</h3>
+            <div class="sync-bar">
+              <div class="sync-dot" id="sync-dot"></div>
+              <span class="sync-txt" id="sync-txt">Chargement...</span>
+            </div>
+          </div>
+          <button class="admin-close" onclick="closeAdmin()">×</button>
+        </div>
+        <div class="admin-tabs">
+          <button class="admin-tab active" onclick="switchTab('qr',this)">Questions / Réponses</button>
+          <button class="admin-tab" onclick="switchTab('liens',this)">Liens</button>
+          <button class="admin-tab" onclick="switchTab('sections',this)">Sections</button>
+        </div>
+      </div>
+      <div class="admin-body">
+        <div id="tab-qr">
+          <label class="field-label">Section</label>
+          <select id="qr-section"></select>
+          <div id="qr-new-sec-wrap" style="display:none">
+            <label class="field-label">Nom de la nouvelle section</label>
+            <input type="text" id="qr-new-sec-name" placeholder="Ex : Commandes urgentes">
+          </div>
+          <label class="field-label">Question</label>
+          <input type="text" id="qr-question" placeholder="Saisissez la question...">
+          <label class="field-label">Réponse</label>
+          <textarea id="qr-answer" placeholder="Saisissez la réponse..."></textarea>
+          <label class="field-label">Mots-clés (optionnel)</label>
+          <input type="text" id="qr-keywords" placeholder="Ex : facture fournisseur paiement">
+          <div class="btn-row"><button class="btn btn-primary" onclick="addQR()">Ajouter</button></div>
+          <div id="qr-msg" class="admin-msg"></div>
+          <div class="item-list" id="qr-list-wrap" style="display:none">
+            <div class="item-list-title">Questions ajoutées — glisser pour réordonner</div>
+            <div id="qr-list"></div>
+          </div>
+        </div>
+        <div id="tab-liens" style="display:none">
+          <label class="field-label">Titre du document</label>
+          <input type="text" id="lien-titre" placeholder="Ex : Guide de création commande 2025">
+          <label class="field-label">URL SharePoint</label>
+          <input type="url" id="lien-url" placeholder="https://wwpcis.sharepoint.com/...">
+          <label class="field-label">Emoji / Icône (optionnel)</label>
+          <input type="text" id="lien-icon" placeholder="📄" maxlength="4" style="max-width:80px">
+          <div class="btn-row"><button class="btn btn-primary" onclick="addLien()">Ajouter</button></div>
+          <div id="lien-msg" class="admin-msg"></div>
+          <div class="item-list" id="lien-list-wrap" style="display:none">
+            <div class="item-list-title">Liens ajoutés — glisser pour réordonner</div>
+            <div id="lien-list"></div>
+          </div>
+        </div>
+        <div id="tab-sections" style="display:none">
+          <p style="font-size:13px;color:#666;line-height:1.7;margin-bottom:16px">Renommez ou réordonnez vos sections personnalisées par glisser-déposer.</p>
+          <div id="sec-msg" class="admin-msg"></div>
+          <div class="item-list" id="sec-list-wrap" style="display:none">
+            <div class="item-list-title">Sections personnalisées</div>
+            <div id="sec-list"></div>
+          </div>
+          <p id="sec-empty" style="font-size:13px;color:#999;font-style:italic;display:none">Aucune section personnalisée pour l'instant.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════
+const ADMIN_PWD = 'dior2025';
+const SP_BASE   = 'https://wwpcis.sharepoint.com/sites/FAQ_portefeuille_de_commandes_d_achat_services_centraux';
+const SP_LIST   = SP_BASE + "/_api/web/lists/getbytitle('faq_data')/items";
+
+// ═══════════════════════════════════
+// ÉTAT
+// ═══════════════════════════════════
+let customQR    = [];
+let customLiens = [];
+let customSecs  = [];
+let spItemId    = null; // ID de l'item dans la liste SharePoint
+
+const STATIC_SECTIONS = {
+  essentiels:"Les Essentiels des Commandes d'Achats",
+  montants:"Montants HT / TTC",
+  refacturation:"Refacturations Marchés",
+  suppression:"Suppression de Commandes",
+  pj:"Pièces Jointes dans les Commandes",
+  engagement:"Engagement des Dépenses",
+  astuces:"Astuces Pratiques",
+  personnel:"Commandes d'Achat — Personnel Extérieur",
+  cdc:"Commandes d'Achat — Christian Dior Couture",
+  aide:"Aide & Contacts"
+};
+function allSections(){ const r={...STATIC_SECTIONS}; customSecs.forEach(s=>{r[s.category]=s.label;}); return r; }
+
+// ═══════════════════════════════════
+// SHAREPOINT LIST API
+// ═══════════════════════════════════
+async function spLoad(){
+  setSyncUI('wait','Chargement...');
+  try {
+    const r = await fetch(SP_LIST + '?$select=Id,cle,valeur&$filter=cle eq \'faq_data\'', {
+      headers:{'Accept':'application/json;odata=verbose'},
+      credentials:'include'
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const json = await r.json();
+    const items = json.d.results;
+    if(items.length > 0){
+      const item = items[0];
+      spItemId = item.Id;
+      const data = JSON.parse(item.valeur || '{}');
+      customQR    = data.customQR    || [];
+      customLiens = data.customLiens || [];
+      customSecs  = data.customSecs  || [];
+    }
+    setSyncUI('ok','Synchronisé avec SharePoint');
+    hideBanner();
+  } catch(e){
+    // Fallback localStorage
+    try{ customQR    = JSON.parse(localStorage.getItem('faq_qr')||'[]'); }catch(x){customQR=[];}
+    try{ customLiens = JSON.parse(localStorage.getItem('faq_liens')||'[]'); }catch(x){customLiens=[];}
+    try{ customSecs  = JSON.parse(localStorage.getItem('faq_secs')||'[]'); }catch(x){customSecs=[];}
+    setSyncUI('err','SharePoint inaccessible — données locales');
+    showBanner('err','⚠ SharePoint inaccessible. Ouvrez ce fichier depuis SharePoint pour activer le partage.');
+  }
+}
+
+async function spSave(){
+  setSyncUI('wait','Enregistrement...');
+  const payload = JSON.stringify({customQR, customLiens, customSecs});
+  // Sauvegarde locale (filet de sécurité)
+  localStorage.setItem('faq_qr',    JSON.stringify(customQR));
+  localStorage.setItem('faq_liens', JSON.stringify(customLiens));
+  localStorage.setItem('faq_secs',  JSON.stringify(customSecs));
+  try {
+    // Token CSRF
+    const ctxR = await fetch(SP_BASE+'/_api/contextinfo',{
+      method:'POST',
+      headers:{'Accept':'application/json;odata=verbose'},
+      credentials:'include'
+    });
+    if(!ctxR.ok) throw new Error('Contexte');
+    const digest = (await ctxR.json()).d.GetContextWebInformation.FormDigestValue;
+
+    if(spItemId){
+      // Mise à jour de l'item existant
+      await fetch(SP_LIST+`(${spItemId})`,{
+        method:'POST',
+        headers:{
+          'Accept':'application/json;odata=verbose',
+          'Content-Type':'application/json;odata=verbose',
+          'X-RequestDigest':digest,
+          'X-HTTP-Method':'MERGE',
+          'If-Match':'*'
+        },
+        credentials:'include',
+        body: JSON.stringify({'__metadata':{'type':'SP.Data.Faq_x005f_dataListItem'},'valeur':payload})
+      });
+    } else {
+      // Création du premier item
+      const cr = await fetch(SP_LIST,{
+        method:'POST',
+        headers:{
+          'Accept':'application/json;odata=verbose',
+          'Content-Type':'application/json;odata=verbose',
+          'X-RequestDigest':digest
+        },
+        credentials:'include',
+        body: JSON.stringify({'__metadata':{'type':'SP.Data.Faq_x005f_dataListItem'},'cle':'faq_data','valeur':payload})
+      });
+      if(!cr.ok) throw new Error('Création');
+      const created = await cr.json();
+      spItemId = created.d.Id;
+    }
+    setSyncUI('ok','Enregistré sur SharePoint ✓');
+    // Notifier les autres onglets
+    try{ const bc=new BroadcastChannel('faq_sync'); bc.postMessage({customQR,customLiens,customSecs}); bc.close(); }catch(x){}
+  } catch(e){
+    setSyncUI('err','Erreur enregistrement SharePoint');
+  }
+}
+
+// Sync multi-onglets
+try{
+  const bc=new BroadcastChannel('faq_sync');
+  bc.onmessage=e=>{ const d=e.data; customQR=d.customQR||[]; customLiens=d.customLiens||[]; customSecs=d.customSecs||[]; rebuildAll(); };
+}catch(e){}
+
+function setSyncUI(state,txt){
+  const d=document.getElementById('sync-dot'),t=document.getElementById('sync-txt');
+  if(!d||!t)return; d.className='sync-dot '+state; t.textContent=txt;
+}
+function showBanner(type,txt){ const b=document.getElementById('sync-banner'); b.textContent=txt; b.className=type; document.body.style.paddingTop='44px'; }
+function hideBanner(){ const b=document.getElementById('sync-banner'); b.className=''; b.textContent=''; document.body.style.paddingTop=''; }
+
+// ═══════════════════════════════════
+// MOTEUR FAQ
+// ═══════════════════════════════════
+const faqData=[];
+function norm(t){ return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/['']/g," "); }
+function registerItem(el){
+  const q=el.querySelector('.faq-question').childNodes[0].textContent.trim();
+  const a=el.querySelector('.faq-answer').textContent.trim();
+  const kw=el.dataset.keywords||'';
+  faqData.push({element:el,question:q,answer:a,keywords:kw,category:el.dataset.category||'',searchText:norm(q+' '+a+' '+kw)});
+}
+function escH(t){ const d=document.createElement('div'); d.appendChild(document.createTextNode(t)); return d.innerHTML; }
+
+function makeItemEl(entry){
+  const el=document.createElement('div');
+  el.className='faq-item'; el.setAttribute('data-category',entry.category);
+  el.setAttribute('data-keywords',entry.keywords||''); el.setAttribute('data-dynamic','1');
+  el.innerHTML=`<button class="faq-question" onclick="toggleFAQ(this)">${escH(entry.question)}<span class="icon">+</span></button><div class="faq-answer"><p>${escH(entry.answer).replace(/\n/g,'<br>')}</p></div>`;
+  return el;
+}
+
+function rebuildDynFAQ(){
+  document.querySelectorAll('.faq-item[data-dynamic]').forEach(e=>e.remove());
+  document.querySelectorAll('.faq-section[data-dynamic]').forEach(e=>e.remove());
+  for(let i=faqData.length-1;i>=0;i--){ if(faqData[i].element.getAttribute('data-dynamic'))faqData.splice(i,1); }
+  const dyn=document.getElementById('dynamic-faq-sections'); dyn.innerHTML='';
+  const exist={}; document.querySelectorAll('.faq-section').forEach(s=>{exist[s.id.replace('section-','')]=s;});
+  const created={};
+  customQR.forEach(entry=>{
+    const el=makeItemEl(entry);
+    if(exist[entry.category]){ exist[entry.category].appendChild(el); }
+    else {
+      if(!created[entry.category]){
+        const sec=document.createElement('div'); sec.className='faq-section'; sec.id='section-'+entry.category; sec.setAttribute('data-dynamic','1');
+        const h2=document.createElement('h2'); const so=customSecs.find(s=>s.category===entry.category);
+        h2.textContent=so?so.label:entry.sectionLabel||entry.category; sec.appendChild(h2); dyn.appendChild(sec); created[entry.category]=sec;
+      }
+      created[entry.category].appendChild(el);
+    }
+    registerItem(el);
+  });
+}
+
+function rebuildDynLiens(){
+  const g=document.getElementById('dynamic-liens-grid'); g.innerHTML='';
+  customLiens.forEach(l=>{ const c=document.createElement('div'); c.className='lien-card'; c.innerHTML=`<span class="lien-card-icon">${escH(l.icon||'📄')}</span><p class="lien-card-title">${escH(l.titre)}</p><a href="${escH(l.url)}" target="_blank" class="lien-card-link">Voir le document</a>`; g.appendChild(c); });
+}
+
+function rebuildCategoryBtns(){
+  document.querySelectorAll('.category-btn[data-dynamic]').forEach(e=>e.remove());
+  const bar=document.getElementById('categoriesBar'); const liensBtn=bar.querySelector('[onclick*="liens"]');
+  customSecs.forEach(sec=>{
+    if(!document.querySelector(`.category-btn[data-category="${sec.category}"]`)){
+      const btn=document.createElement('button'); btn.className='category-btn'; btn.setAttribute('data-dynamic','1');
+      btn.setAttribute('data-category',sec.category); btn.textContent=sec.label;
+      btn.setAttribute('onclick',`filterCategory('${sec.category}',this)`); bar.insertBefore(btn,liensBtn);
+    }
+  });
+}
+
+function rebuildAll(){ rebuildDynFAQ(); rebuildDynLiens(); rebuildCategoryBtns(); showAllItems(); }
+
+// ═══════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════
+function openAdmin(){ document.getElementById('admin-overlay').classList.add('open'); document.getElementById('admin-lock').style.display='block'; document.getElementById('admin-main').style.display='none'; document.getElementById('admin-pwd').value=''; document.getElementById('lock-msg').style.display='none'; setTimeout(()=>document.getElementById('admin-pwd').focus(),80); }
+function closeAdmin(){ document.getElementById('admin-overlay').classList.remove('open'); }
+function checkPwd(){
+  if(document.getElementById('admin-pwd').value===ADMIN_PWD){
+    document.getElementById('admin-lock').style.display='none';
+    const m=document.getElementById('admin-main'); m.style.display='flex';
+    buildQRSectionSelect(); renderQRList(); renderLienList(); renderSecList();
+  } else { showMsg('lock-msg','err','Mot de passe incorrect.'); }
+}
+function switchTab(name,btn){
+  ['qr','liens','sections'].forEach(t=>document.getElementById('tab-'+t).style.display='none');
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).style.display='block'; btn.classList.add('active');
+}
+document.getElementById('admin-overlay').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
+function showMsg(id,type,txt,dur){ const el=document.getElementById(id); el.textContent=txt; el.className='admin-msg '+type; el.style.display='block'; if(dur)setTimeout(()=>el.style.display='none',dur); }
+
+// Q/R
+function buildQRSectionSelect(){
+  const sel=document.getElementById('qr-section'); sel.innerHTML='';
+  Object.entries(allSections()).forEach(([k,v])=>{ const o=document.createElement('option'); o.value=k; o.textContent=v; sel.appendChild(o); });
+  const opt=document.createElement('option'); opt.value='nouvelle'; opt.textContent='— Nouvelle section —'; sel.appendChild(opt);
+  sel.onchange=()=>{ document.getElementById('qr-new-sec-wrap').style.display=sel.value==='nouvelle'?'block':'none'; };
+}
+async function addQR(){
+  const sv=document.getElementById('qr-section').value, nn=document.getElementById('qr-new-sec-name').value.trim();
+  const q=document.getElementById('qr-question').value.trim(), a=document.getElementById('qr-answer').value.trim();
+  const kw=document.getElementById('qr-keywords').value.trim();
+  if(!q||!a){ showMsg('qr-msg','err','Question et réponse obligatoires.'); return; }
+  let cat=sv, sl=allSections()[sv]||sv;
+  if(sv==='nouvelle'){
+    if(!nn){ showMsg('qr-msg','err','Saisissez le nom de la nouvelle section.'); return; }
+    cat=nn.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,''); sl=nn;
+    if(!customSecs.find(s=>s.category===cat)) customSecs.push({id:Date.now(),category:cat,label:nn});
+  }
+  customQR.push({id:Date.now(),category:cat,sectionLabel:sl,question:q,answer:a,keywords:kw});
+  showMsg('qr-msg','wait','Enregistrement...');
+  await spSave(); rebuildAll(); buildQRSectionSelect(); renderQRList(); renderSecList();
+  ['qr-question','qr-answer','qr-keywords','qr-new-sec-name'].forEach(id=>document.getElementById(id).value='');
+  showMsg('qr-msg','ok','✓ Question ajoutée et visible par tous.',4000);
+}
+function renderQRList(){
+  const wrap=document.getElementById('qr-list-wrap'), list=document.getElementById('qr-list');
+  if(!customQR.length){ wrap.style.display='none'; return; }
+  wrap.style.display='block'; list.innerHTML='';
+  customQR.forEach((e,i)=>{
+    const row=document.createElement('div'); row.className='item-row'; row.draggable=true; row.dataset.idx=i;
+    row.innerHTML=`<span class="drag-handle">⠿</span><div class="item-info"><strong>${escH(e.question)}</strong><span>${escH(allSections()[e.category]||e.category)}</span></div><div class="item-actions"><button class="icon-btn" onclick="toggleEditQR(${i})">✎</button><button class="icon-btn del" onclick="deleteQR(${i})">×</button></div>`;
+    const ef=document.createElement('div'); ef.className='edit-form'; ef.id='edit-qr-'+i;
+    ef.innerHTML=`<label class="field-label">Question</label><input type="text" id="eq-q-${i}" value="${escH(e.question)}"><label class="field-label">Réponse</label><textarea id="eq-a-${i}">${escH(e.answer)}</textarea><label class="field-label">Mots-clés</label><input type="text" id="eq-k-${i}" value="${escH(e.keywords||'')}"><div class="edit-btn-row"><button class="btn btn-primary" onclick="saveEditQR(${i})">Enregistrer</button><button class="btn btn-ghost" onclick="toggleEditQR(${i})">Annuler</button></div>`;
+    list.appendChild(row); list.appendChild(ef); setupDrag(row,'qr');
+  });
+}
+function toggleEditQR(i){ document.getElementById('edit-qr-'+i).classList.toggle('open'); }
+async function saveEditQR(i){
+  customQR[i].question=document.getElementById('eq-q-'+i).value.trim();
+  customQR[i].answer=document.getElementById('eq-a-'+i).value.trim();
+  customQR[i].keywords=document.getElementById('eq-k-'+i).value.trim();
+  await spSave(); rebuildAll(); renderQRList(); showMsg('qr-msg','ok','✓ Modifié.',3000);
+}
+async function deleteQR(i){ if(!confirm('Supprimer cette question ?'))return; customQR.splice(i,1); await spSave(); rebuildAll(); renderQRList(); }
+
+// LIENS
+async function addLien(){
+  const t=document.getElementById('lien-titre').value.trim(), u=document.getElementById('lien-url').value.trim(), ic=document.getElementById('lien-icon').value.trim()||'📄';
+  if(!t||!u){ showMsg('lien-msg','err','Titre et URL obligatoires.'); return; }
+  customLiens.push({id:Date.now(),titre:t,url:u,icon:ic});
+  showMsg('lien-msg','wait','Enregistrement...'); await spSave(); rebuildDynLiens(); renderLienList();
+  ['lien-titre','lien-url','lien-icon'].forEach(id=>document.getElementById(id).value='');
+  showMsg('lien-msg','ok','✓ Lien ajouté.',4000);
+}
+function renderLienList(){
+  const wrap=document.getElementById('lien-list-wrap'), list=document.getElementById('lien-list');
+  if(!customLiens.length){ wrap.style.display='none'; return; }
+  wrap.style.display='block'; list.innerHTML='';
+  customLiens.forEach((l,i)=>{
+    const row=document.createElement('div'); row.className='item-row'; row.draggable=true; row.dataset.idx=i;
+    row.innerHTML=`<span class="drag-handle">⠿</span><div class="item-info"><strong>${escH(l.icon+' '+l.titre)}</strong><span style="word-break:break-all">${escH(l.url)}</span></div><div class="item-actions"><button class="icon-btn" onclick="toggleEditLien(${i})">✎</button><button class="icon-btn del" onclick="deleteLien(${i})">×</button></div>`;
+    const ef=document.createElement('div'); ef.className='edit-form'; ef.id='edit-lien-'+i;
+    ef.innerHTML=`<label class="field-label">Titre</label><input type="text" id="el-t-${i}" value="${escH(l.titre)}"><label class="field-label">URL SharePoint</label><input type="url" id="el-u-${i}" value="${escH(l.url)}"><label class="field-label">Icône</label><input type="text" id="el-i-${i}" value="${escH(l.icon||'📄')}" maxlength="4" style="max-width:80px"><div class="edit-btn-row"><button class="btn btn-primary" onclick="saveEditLien(${i})">Enregistrer</button><button class="btn btn-ghost" onclick="toggleEditLien(${i})">Annuler</button></div>`;
+    list.appendChild(row); list.appendChild(ef); setupDrag(row,'lien');
+  });
+}
+function toggleEditLien(i){ document.getElementById('edit-lien-'+i).classList.toggle('open'); }
+async function saveEditLien(i){
+  customLiens[i].titre=document.getElementById('el-t-'+i).value.trim();
+  customLiens[i].url=document.getElementById('el-u-'+i).value.trim();
+  customLiens[i].icon=document.getElementById('el-i-'+i).value.trim()||'📄';
+  await spSave(); rebuildDynLiens(); renderLienList(); showMsg('lien-msg','ok','✓ Modifié.',3000);
+}
+async function deleteLien(i){ if(!confirm('Supprimer ce lien ?'))return; customLiens.splice(i,1); await spSave(); rebuildDynLiens(); renderLienList(); }
+
+// SECTIONS
+function renderSecList(){
+  const wrap=document.getElementById('sec-list-wrap'), list=document.getElementById('sec-list'), empty=document.getElementById('sec-empty');
+  if(!customSecs.length){ wrap.style.display='none'; empty.style.display='block'; return; }
+  empty.style.display='none'; wrap.style.display='block'; list.innerHTML='';
+  customSecs.forEach((s,i)=>{
+    const row=document.createElement('div'); row.className='item-row'; row.draggable=true; row.dataset.idx=i;
+    row.innerHTML=`<span class="drag-handle">⠿</span><div class="item-info"><strong>${escH(s.label)}</strong><span>ID : ${escH(s.category)}</span></div><div class="item-actions"><button class="icon-btn" onclick="toggleEditSec(${i})">✎</button><button class="icon-btn del" onclick="deleteSec(${i})">×</button></div>`;
+    const ef=document.createElement('div'); ef.className='edit-form'; ef.id='edit-sec-'+i;
+    ef.innerHTML=`<label class="field-label">Nom de la section</label><input type="text" id="es-l-${i}" value="${escH(s.label)}"><div class="edit-btn-row"><button class="btn btn-primary" onclick="saveEditSec(${i})">Renommer</button><button class="btn btn-ghost" onclick="toggleEditSec(${i})">Annuler</button></div>`;
+    list.appendChild(row); list.appendChild(ef); setupDrag(row,'sec');
+  });
+}
+function toggleEditSec(i){ document.getElementById('edit-sec-'+i).classList.toggle('open'); }
+async function saveEditSec(i){
+  const nl=document.getElementById('es-l-'+i).value.trim(); if(!nl)return;
+  customSecs[i].label=nl; customQR.forEach(q=>{if(q.category===customSecs[i].category)q.sectionLabel=nl;});
+  await spSave(); rebuildAll(); renderSecList(); buildQRSectionSelect(); showMsg('sec-msg','ok','✓ Section renommée.',3000);
+}
+async function deleteSec(i){
+  const s=customSecs[i], count=customQR.filter(q=>q.category===s.category).length;
+  if(count>0&&!confirm(`Cette section contient ${count} question(s). Supprimer quand même ?`))return;
+  customQR=customQR.filter(q=>q.category!==s.category); customSecs.splice(i,1);
+  await spSave(); rebuildAll(); renderQRList(); renderSecList(); buildQRSectionSelect();
+}
+
+// DRAG & DROP
+let dragSrc=null, dragType=null;
+function setupDrag(row,type){
+  row.addEventListener('dragstart',e=>{dragSrc=row;dragType=type;row.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  row.addEventListener('dragend',()=>{row.classList.remove('dragging');document.querySelectorAll('.item-row').forEach(r=>r.classList.remove('drag-over'));});
+  row.addEventListener('dragover',e=>{e.preventDefault();if(row!==dragSrc){document.querySelectorAll('.item-row').forEach(r=>r.classList.remove('drag-over'));row.classList.add('drag-over');}});
+  row.addEventListener('drop',e=>{
+    e.preventDefault(); if(!dragSrc||dragSrc===row||dragType!==type)return;
+    const from=parseInt(dragSrc.dataset.idx),to=parseInt(row.dataset.idx);
+    const arr=type==='qr'?customQR:type==='lien'?customLiens:customSecs;
+    const [moved]=arr.splice(from,1); arr.splice(to,0,moved); spSave();
+    if(type==='qr'){rebuildAll();renderQRList();}else if(type==='lien'){rebuildDynLiens();renderLienList();}else{rebuildCategoryBtns();renderSecList();}
+  });
+}
+
+// ═══════════════════════════════════
+// RECHERCHE & FAQ
+// ═══════════════════════════════════
+function lev(a,b){const m=[];for(let i=0;i<=b.length;i++)m[i]=[i];for(let j=0;j<=a.length;j++)m[0][j]=j;for(let i=1;i<=b.length;i++)for(let j=1;j<=a.length;j++)m[i][j]=b[i-1]===a[j-1]?m[i-1][j-1]:Math.min(m[i-1][j-1]+1,m[i][j-1]+1,m[i-1][j]+1);return m[b.length][a.length];}
+function score(term,entry){const ns=norm(term),ne=entry.searchText;const words=ns.split(' ').filter(w=>w.length>1);let s=0;words.forEach(w=>{if(ne.includes(w)){s+=20;return;}let p=false;ne.split(' ').forEach(ew=>{if(ew.startsWith(w)&&w.length>=4){s+=10;p=true;}});if(p)return;if(w.length>=6)ne.split(' ').forEach(ew=>{if(ew.length>=5){const d=lev(w,ew);const sim=1-d/Math.max(w.length,ew.length);if(sim>=.85)s+=Math.round(sim*8);}});});return s;}
+function hilight(txt,term){if(!term)return txt;return term.split(' ').filter(w=>w.length>1).reduce((r,w)=>r.replace(new RegExp(`(${w})`,'gi'),'<span class="highlight">$1</span>'),txt);}
+function handleSearch(){
+  const val=document.getElementById('searchInput').value.trim();const box=document.getElementById('suggestionsBox');
+  if(!val){box.style.display='none';showAllItems();return;}
+  const scored=faqData.map(e=>({...e,sc:score(val,e)})).filter(e=>e.sc>0).sort((a,b)=>b.sc-a.sc);
+  box.innerHTML='';
+  if(!scored.length){box.innerHTML='<div class="no-suggestion">Aucune suggestion trouvée</div>';box.style.display='block';}
+  else{scored.slice(0,5).forEach(e=>{const d=document.createElement('div');d.className='suggestion-item';d.innerHTML=`<span class="suggestion-icon">→</span><span>${hilight(e.question,val)}</span>`;d.onclick=()=>{box.style.display='none';document.getElementById('searchInput').value=e.question;faqData.forEach(x=>{x.element.classList.add('hidden');x.element.classList.remove('open');});e.element.classList.remove('hidden');e.element.classList.add('open');document.querySelectorAll('.faq-section').forEach(s=>{s.style.display=s.querySelectorAll('.faq-item:not(.hidden)').length?'block':'none';});document.getElementById('noResults').style.display='none';e.element.scrollIntoView({behavior:'smooth',block:'center'});};box.appendChild(d);});box.style.display='block';}
+  const vis=new Set(scored.map(e=>e.element));
+  faqData.forEach(e=>{if(vis.has(e.element))e.element.classList.remove('hidden');else{e.element.classList.add('hidden');e.element.classList.remove('open');}});
+  document.querySelectorAll('.faq-section').forEach(s=>{if(s.id==='section-liens'){s.style.display='none';return;}s.style.display=s.querySelectorAll('.faq-item:not(.hidden)').length?'block':'none';});
+  document.getElementById('noResults').style.display=scored.length?'none':'block';
+}
+function showAllItems(){faqData.forEach(e=>{e.element.classList.remove('hidden','open');});document.querySelectorAll('.faq-section').forEach(s=>{s.style.display=s.id==='section-liens'?'none':'block';});document.getElementById('noResults').style.display='none';}
+function filterCategory(cat,btn){
+  document.querySelectorAll('.category-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('searchInput').value='';document.getElementById('suggestionsBox').style.display='none';
+  if(cat==='liens'){document.querySelectorAll('.faq-section').forEach(s=>{s.style.display=s.id==='section-liens'?'block':'none';});document.getElementById('noResults').style.display='none';return;}
+  document.getElementById('section-liens').style.display='none';
+  faqData.forEach(e=>{if(cat==='all'||e.category===cat)e.element.classList.remove('hidden');else{e.element.classList.add('hidden');e.element.classList.remove('open');}});
+  document.querySelectorAll('.faq-section').forEach(s=>{if(s.id==='section-liens')return;s.style.display=s.querySelectorAll('.faq-item:not(.hidden)').length?'block':'none';});
+  document.getElementById('noResults').style.display='none';
+}
+function toggleFAQ(btn){const it=btn.parentElement,was=it.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(x=>x.classList.remove('open'));if(!was)it.classList.add('open');}
+document.addEventListener('click',e=>{if(!document.querySelector('.search-wrapper').contains(e.target))document.getElementById('suggestionsBox').style.display='none';});
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+document.querySelectorAll('.faq-item').forEach(registerItem);
+spLoad().then(()=>rebuildAll());
+</script>
+</body>
+</html>
